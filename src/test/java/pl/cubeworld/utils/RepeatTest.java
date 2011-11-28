@@ -48,5 +48,30 @@ public class RepeatTest {
 		assertThat(result.isSuccess(), is(false));
 		assertThat(result.timeTakenMs(), is(greaterThan(timeoutMs)));
 	}
+	
+	@Test
+	public void shouldFinishBeforeTimeout5timesFalseThenTrue() {
+		//given
+		long timeoutMs = 500L;
+		
+		
+		Repeatable func = new Repeatable() {
+			int counter = 0;
+			public Boolean call() throws Exception {
+				counter++;
+				if(counter >= 5){
+					return false;
+				}
+				return true;
+			}
+		};
+		
+		//when
+		RepeatResult result = Repeat.repeat(timeoutMs,TimeUnit.MILLISECONDS).function(func);
+		
+		//then
+		assertThat(result.isSuccess(), is(true));
+		assertThat(result.timeTakenMs(), is(lessThan(timeoutMs)));
+	}
 
 }
